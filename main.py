@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#from PyQt5.QtWidgets import QApplication
+# from PyQt5.QtWidgets import QApplication
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 import main_ui
@@ -11,7 +11,7 @@ if __name__ == "__main__":
     db_work_obj.perform_connection()
     db_work_obj.load_data()
     data = db_work_obj.get_select_result()
-    header = ['№', 'Дата', 'База', '№ АБС', 'Клиент','Объем','Марка','Вид','Цена','Сумма']
+    header = ['№', 'Дата', 'База', '№ АБС', 'Клиент', 'Объем', 'Марка', 'Вид', 'Цена', 'Сумма']
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = main_ui.MainWindow(data, header, db_work_obj)
     MainWindow.show()
