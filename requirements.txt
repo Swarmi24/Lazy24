@@ -1,0 +1,12 @@
+astroid==2.5.1
+colorama==0.4.4
+isort==5.7.0
+lazy-object-proxy==1.5.2
+mccabe==0.6.1
+mysqlclient==2.0.3
+PyQt5==5.15.3
+PyQt5-Qt==5.15.2
+PyQt5-sip==12.8.1
+shiboken2==5.15.2
+toml==0.10.2
+wrapt==1.12.1
