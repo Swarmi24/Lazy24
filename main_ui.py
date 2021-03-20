@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import work_with_db
 
 from datetime import datetime
 
@@ -8,9 +9,18 @@ from PyQt5.QtWidgets import QCompleter
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, data, header, db_work_obj, *args):
+    def __init__(self, *args):
+        # Объект для работы с базой
+        self.db_work_obj = work_with_db.work_with_db()
+        # Подключение к базе
+        self.db_work_obj.perform_connection()
+        # Первоначальная загрузка данных
+        self.db_work_obj.load_data()
+        data = self.db_work_obj.get_select_result()
+        
+        header = ['№', 'Дата', 'База', '№ АБС', 'Клиент', 'Объем', 'Марка', 'Вид', 'Цена', 'Сумма']
+
         # Other
-        self.db_work_obj = db_work_obj
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(14)
@@ -54,7 +64,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.pushButton_4 = QtWidgets.QPushButton(self.widget_2)
         self.pushButton_4.setGeometry(QtCore.QRect(150, 60, 131, 41))
-        self.pushButton_4.clicked.connect(self.pushButton_4_click)
+        #self.pushButton_4.clicked.connect(self.pushButton_4_click)
         self.pushButton_4.setText("Оплата")
         self.pushButton_4.setFont(font)
 
@@ -370,17 +380,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
         my_index = self.tableView.selectedIndexes()[0]
 
-        self.id_edit_row = int(self.tableView.model().index(my_index.row(), 0).data(,)
-        pars_my_date = self.tableView.model().index(my_index.row(), 1).data(,
-        self.dateEdit_change.setDate(
-            QtCore.QDate(int(pars_my_date[6:10]), int(pars_my_date[3:5]), int(pars_my_date[0:2])))
-        self.combo_base_change.setCurrentText(self.tableView.model().index(my_index.row(), 2).data(,)
-        self.edit_abs_num_change.setText(self.tableView.model().index(my_index.row(), 3).data(,)
-        self.combo_client_change.setCurrentText(self.tableView.model().index(my_index.row(), 4).data(,)
-        self.edit_volume_change.setText(str(self.tableView.model().index(my_index.row(), 5).data(,))
-        self.combo_type_1_change.setCurrentText(self.tableView.model().index(my_index.row(), 6).data(,)
-        self.combo_type_2_change.setCurrentText(self.tableView.model().index(my_index.row(), 7).data(,)
-        self.edit_cost_change.setText(str(self.tableView.model().index(my_index.row(), 8).data(,))
+        self.id_edit_row = int(self.tableView.model().index(my_index.row(), 0).data())
+        pars_my_date = self.tableView.model().index(my_index.row(), 1).data()
+        self.dateEdit_change.setDate(QtCore.QDate(int(pars_my_date[6:10]), int(pars_my_date[3:5]), int(pars_my_date[0:2])))
+        self.combo_base_change.setCurrentText(self.tableView.model().index(my_index.row(), 2).data())
+        self.edit_abs_num_change.setText(self.tableView.model().index(my_index.row(), 3).data())
+        self.combo_client_change.setCurrentText(self.tableView.model().index(my_index.row(), 4).data())
+        self.edit_volume_change.setText(str(self.tableView.model().index(my_index.row(), 5).data()))
+        self.combo_type_1_change.setCurrentText(self.tableView.model().index(my_index.row(), 6).data())
+        self.combo_type_2_change.setCurrentText(self.tableView.model().index(my_index.row(), 7).data())
+        self.edit_cost_change.setText(str(self.tableView.model().index(my_index.row(), 8).data()))
 
         # print(str(self.tableView.model().data(index)))
 
@@ -476,10 +485,10 @@ class MyTableModel(QtCore.QAbstractTableModel):
         self.my_list = my_list_2
         self.header = header
 
-    def rowCount(self, **kwargs):
+    def rowCount(self, *args, **kwargs):
         return len(self.my_list)
 
-    def columnCount(self, **kwargs):
+    def columnCount(self, *args, **kwargs):
         return len(self.my_list[0])
 
     def data(self, index, role):
