@@ -69,10 +69,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.pushButton_4 = QtWidgets.QPushButton(self.widget_2)
         self.pushButton_4.setGeometry(QtCore.QRect(150, 60, 131, 41))
-<<<<<<< HEAD
-        #self.pushButton_4.clicked.connect(self.pushButton_4_click)
-=======
->>>>>>> 8dbb58556b720f6d563fadea12e327e2bd5e95f3
         self.pushButton_4.setText("Оплата")
         self.pushButton_4.setFont(font)
 
@@ -395,12 +391,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.id_edit_row = int(self.tableView.model().index(my_index.row(), 0).data())
         pars_my_date = self.tableView.model().index(my_index.row(), 1).data()
-<<<<<<< HEAD
-        self.dateEdit_change.setDate(
-            QtCore.QDate(int(pars_my_date[6:10]), int(pars_my_date[3:5]), int(pars_my_date[0:2])))
-=======
         self.dateEdit_change.setDate(QtCore.QDate(int(pars_my_date[6:10]), int(pars_my_date[3:5]), int(pars_my_date[0:2])))
->>>>>>> 8dbb58556b720f6d563fadea12e327e2bd5e95f3
         self.combo_base_change.setCurrentText(self.tableView.model().index(my_index.row(), 2).data())
         self.edit_abs_num_change.setText(self.tableView.model().index(my_index.row(), 3).data())
         self.combo_client_change.setCurrentText(self.tableView.model().index(my_index.row(), 4).data())
@@ -408,11 +399,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.combo_type_1_change.setCurrentText(self.tableView.model().index(my_index.row(), 6).data())
         self.combo_type_2_change.setCurrentText(self.tableView.model().index(my_index.row(), 7).data())
         self.edit_cost_change.setText(str(self.tableView.model().index(my_index.row(), 8).data()))
-<<<<<<< HEAD
-
-        # print(str(self.tableView.model().data(index)))
-=======
->>>>>>> 8dbb58556b720f6d563fadea12e327e2bd5e95f3
 
     @pyqtSlot()  # декоратор, в 99% и без него будет работать, но вроде дает оптимизацию
     def push_button_5_click(self):
