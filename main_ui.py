@@ -186,6 +186,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.button_add.clicked.connect(self.button_add_click)
         self.button_add.setFont(font)
         self.button_add.setText("Добавить")
+        self.button_add.setVisible(False)
+
+        self.button_change = QtWidgets.QPushButton(self.widget_3)
+        self.button_change.setGeometry(QtCore.QRect(170, 248, 111, 39))
+        self.button_change.clicked.connect(self.button_change_click)
+        self.button_change.setFont(font)
+        self.button_change.setText("Изменить")
+        self.button_change.setText
+        self.button_change.setVisible(False)
 
         # widget_4 - форма для просмотра
         self.widget_4 = QtWidgets.QWidget(self.centralwidget)
@@ -230,125 +239,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # При нажатии на кнопку добавить - менять обратно
         # Тк формы скорее всего будут всегда одинаковые, кроме кнопки
 
-        # widget_5 - форма для изменения отгрузки
+        # widget_5 - форма для внесения оплат
         self.widget_5 = QtWidgets.QWidget(self.centralwidget)
         self.widget_5.setGeometry(QtCore.QRect(900, 170, 291, 500))
         self.widget_5.setVisible(False)
-
-        self.label_3_change = QtWidgets.QLabel(self.widget_5)
-        self.label_3_change.setGeometry(QtCore.QRect(10, 10, 131, 31))
-        self.label_3_change.setFont(font)
-        self.label_3_change.setText("№ Машины")
-
-        self.edit_abs_num_change = QtWidgets.QLineEdit(self.widget_5)
-        self.edit_abs_num_change.setGeometry(QtCore.QRect(10, 40, 101, 35))
-        self.edit_abs_num_change.setFont(font)
-        self.edit_abs_num_change.returnPressed.connect(self.edit_abs_num.focusNextChild)
-        self.edit_abs_num_change.setText("1235")
-
-        self.label_2_change = QtWidgets.QLabel(self.widget_5)
-        self.label_2_change.setGeometry(QtCore.QRect(120, 10, 61, 31))
-        self.label_2_change.setFont(font)
-        self.label_2_change.setText("Марка")
-
-        self.combo_type_1_change = QtWidgets.QComboBox(self.widget_5)
-        self.combo_type_1_change.setGeometry(QtCore.QRect(120, 40, 81, 35))
-        self.combo_type_1_change.setFont(font)
-        self.combo_type_1_change.setEditable(True)
-        # Надо сделать подгрузку с базы
-        list_combo_types_1_change = ['', '75', '100', '150', '200', '250', '300', '350', '400']
-        self.combo_type_1_change.addItems(list_combo_types_1_change)
-        self.combo_type_1_change.completer().setCompletionMode(QCompleter.InlineCompletion)
-
-        self.combo_type_2_change = QtWidgets.QComboBox(self.widget_5)
-        self.combo_type_2_change.setGeometry(QtCore.QRect(200, 40, 81, 35))
-        self.combo_type_2_change.setFont(font)
-        self.combo_type_2_change.setEditable(True)
-        # Надо сделать подгрузку с базы
-        list_combo_types_2_change = ['', '5-20', 'р-р', 'пгс', '20-40', '50/50']
-        self.combo_type_2_change.addItems(list_combo_types_2_change)
-        self.combo_type_2_change.completer().setCompletionMode(QCompleter.InlineCompletion)
-
-        self.label_change = QtWidgets.QLabel(self.widget_5)
-        self.label_change.setGeometry(QtCore.QRect(10, 80, 71, 31))
-        self.label_change.setFont(font)
-        self.label_change.setText("Объем")
-
-        self.edit_volume_change = QtWidgets.QLineEdit(self.widget_5)
-        self.edit_volume_change.setGeometry(QtCore.QRect(10, 110, 61, 35))
-        self.edit_volume_change.setFont(font)
-
-        self.label_4_change = QtWidgets.QLabel(self.widget_5)
-        self.label_4_change.setGeometry(QtCore.QRect(80, 80, 51, 31))
-        self.label_4_change.setFont(font)
-        self.label_4_change.setText("Цена")
-
-        self.edit_cost_change = QtWidgets.QLineEdit(self.widget_5)
-        self.edit_cost_change.setGeometry(QtCore.QRect(80, 110, 101, 35))
-        self.edit_cost_change.setFont(font)
-
-        self.button_cost_change = QtWidgets.QPushButton(self.widget_5)
-        self.button_cost_change.setGeometry(QtCore.QRect(185, 110, 41, 35))
-        self.button_cost_change.setFont(font)
-        self.button_cost_change.setText("...")
-
-        self.label_5_change = QtWidgets.QLabel(self.widget_5)
-        self.label_5_change.setGeometry(QtCore.QRect(230, 80, 41, 31))
-        self.label_5_change.setFont(font)
-        self.label_5_change.setText("База")
-
-        self.combo_base_change = QtWidgets.QComboBox(self.widget_5)
-        self.combo_base_change.setGeometry(QtCore.QRect(230, 110, 51, 35))
-        self.combo_base_change.setFont(font)
-        self.combo_base_change.setEditable(True)
-        self.combo_base_change.setCurrentText("90")
-        # Надо сделать подгрузку с базы
-        list_combo_base_change = ['', '38р', '38б', '90']
-        self.combo_base_change.addItems(list_combo_base_change)
-        self.combo_base_change.completer().setCompletionMode(QCompleter.InlineCompletion)
-
-        self.label_6_change = QtWidgets.QLabel(self.widget_5)
-        self.label_6_change.setGeometry(QtCore.QRect(10, 150, 71, 31))
-        self.label_6_change.setFont(font)
-        self.label_6_change.setText("Дата")
-
-        self.dateEdit_change = QtWidgets.QDateEdit(self.widget_5)
-        self.dateEdit_change.setGeometry(QtCore.QRect(10, 180, 131, 35))
-        self.dateEdit_change.setFont(font)
-        self.dateEdit_change.setDateTime(QtCore.QDateTime(QtCore.QDate(2021, 2, 12), QtCore.QTime(0, 0, 0)))
-        self.dateEdit_change.setDateTime(datetime.now())
-
-        self.label_7_change = QtWidgets.QLabel(self.widget_5)
-        self.label_7_change.setGeometry(QtCore.QRect(150, 150, 111, 31))
-        self.label_7_change.setFont(font)
-        self.label_7_change.setText("Примечание")
-
-        self.edit_comm_change = QtWidgets.QLineEdit(self.widget_5)
-        self.edit_comm_change.setGeometry(QtCore.QRect(150, 180, 131, 35))
-        self.edit_comm_change.setFont(font)
-        self.edit_comm_change.setText("Блаблабла")
-
-        self.label_8_change = QtWidgets.QLabel(self.widget_5)
-        self.label_8_change.setGeometry(QtCore.QRect(10, 220, 71, 31))
-        self.label_8_change.setFont(font)
-        self.label_8_change.setText("Клиент")
-
-        self.combo_client_change = QtWidgets.QComboBox(self.widget_5)
-        self.combo_client_change.setGeometry(QtCore.QRect(10, 250, 151, 35))
-        self.combo_client_change.setFont(font)
-        self.combo_client_change.setEditable(True)
-        # Надо сделать подгрузку с базы
-        list_combo_client_change = ['', 'Элиста', 'Эверест', 'Ваятель', 'Руслан', 'Дима', 'ЖеняЦ']
-        self.combo_client_change.addItems(list_combo_client_change)
-        self.combo_client_change.completer().setCompletionMode(QCompleter.InlineCompletion)
-
-        self.button_change = QtWidgets.QPushButton(self.widget_5)
-        self.button_change.setGeometry(QtCore.QRect(170, 248, 111, 39))
-        self.button_change.clicked.connect(self.button_change_click)
-        self.button_change.setFont(font)
-        self.button_change.setText("Изменить")
-
-        # widget_6 - форма для внесения оплаты
 
         # tableView
         # Первоначальная загрузка данных
@@ -373,7 +267,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def push_button_click(self):
         self.widget_3.setVisible(False)
         self.widget_4.setVisible(True)
-        self.widget_5.setVisible(False)
 
         text_query = """select * from shipments"""
         self.db_work_obj.load_data(text_query)
@@ -385,26 +278,34 @@ class MainWindow(QtWidgets.QMainWindow):
     def push_button_2_click(self):
         self.widget_3.setVisible(True)
         self.widget_4.setVisible(False)
-        self.widget_5.setVisible(False)
+
+        self.button_add.setVisible(True)
+        self.button_change.setVisible(False)
 
     @pyqtSlot()  # декоратор, в 99% и без него будет работать, но вроде дает оптимизацию
+    # Действие кнопки меню "Изменить"
+    # Отображение формы для изменения и подгрузка туда данных выбранной строки
     def push_button_3_click(self):
-        self.widget_3.setVisible(False)
+        self.widget_3.setVisible(True)
         self.widget_4.setVisible(False)
-        self.widget_5.setVisible(True)
+
+        self.button_add.setVisible(False)
+        self.button_change.setVisible(True)
 
         my_index = self.tableView.selectedIndexes()[0]
-
+        # Сохранение айди строки
         self.id_edit_row = int(self.tableView.model().index(my_index.row(), 0).data())
+
+        # Копирование данных со строки в форму
         pars_my_date = self.tableView.model().index(my_index.row(), 1).data()
-        self.dateEdit_change.setDate(QtCore.QDate(int(pars_my_date[6:10]), int(pars_my_date[3:5]), int(pars_my_date[0:2])))
-        self.combo_base_change.setCurrentText(self.tableView.model().index(my_index.row(), 2).data())
-        self.edit_abs_num_change.setText(self.tableView.model().index(my_index.row(), 3).data())
-        self.combo_client_change.setCurrentText(self.tableView.model().index(my_index.row(), 4).data())
-        self.edit_volume_change.setText(str(self.tableView.model().index(my_index.row(), 5).data()))
-        self.combo_type_1_change.setCurrentText(self.tableView.model().index(my_index.row(), 6).data())
-        self.combo_type_2_change.setCurrentText(self.tableView.model().index(my_index.row(), 7).data())
-        self.edit_cost_change.setText(str(self.tableView.model().index(my_index.row(), 8).data()))
+        self.dateEdit.setDate(QtCore.QDate(int(pars_my_date[6:10]), int(pars_my_date[3:5]), int(pars_my_date[0:2])))
+        self.combo_base.setCurrentText(self.tableView.model().index(my_index.row(), 2).data())
+        self.edit_abs_num.setText(self.tableView.model().index(my_index.row(), 3).data())
+        self.combo_client.setCurrentText(self.tableView.model().index(my_index.row(), 4).data())
+        self.edit_volume.setText(str(self.tableView.model().index(my_index.row(), 5).data()))
+        self.combo_type_1.setCurrentText(self.tableView.model().index(my_index.row(), 6).data())
+        self.combo_type_2.setCurrentText(self.tableView.model().index(my_index.row(), 7).data())
+        self.edit_cost.setText(str(self.tableView.model().index(my_index.row(), 8).data()))
 
     @pyqtSlot()  # декоратор, в 99% и без него будет работать, но вроде дает оптимизацию
     def push_button_5_click(self):
@@ -440,6 +341,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Исполнение запроса через объект для работы с базой
         self.db_work_obj.insert_data(new_add_data)
+        print("Добавлена новая запись в БД")
 
     @pyqtSlot()
     def button_change_click(self):
@@ -448,21 +350,15 @@ class MainWindow(QtWidgets.QMainWindow):
 		UPDATE shipments 
         SET date = '{}', base = '{}', abs_num = '{}', client_id = '{}', volume = '{}', brand = '{}', type = '{}', cost = '{}'
         WHERE id_shipment = '{}'
-		'''.format(self.dateEdit_change.dateTime().toString("yyyy-MM-dd"), self.combo_base_change.currentText(),
-                   self.edit_abs_num_change.text(),
-                   self.combo_client_change.currentText(), self.edit_volume_change.text(),
-                   self.combo_type_1_change.currentText(), self.combo_type_2_change.currentText(),
-                   self.edit_cost_change.text(), self.id_edit_row)
-
+		'''.format(self.dateEdit.dateTime().toString("yyyy-MM-dd"), self.combo_base.currentText(),
+                   self.edit_abs_num.text(),
+                   self.combo_client.currentText(), self.edit_volume.text(),
+                   self.combo_type_1.currentText(), self.combo_type_2.currentText(),
+                   self.edit_cost.text(), self.id_edit_row)
+        print(new_change_data)
         # Исполнение запроса через объект для работы с базой     
         self.db_work_obj.insert_data(new_change_data)
-
-    def fill_table(self, data):
-        for row in data:
-            row_position = self.tableView.rowCount()
-            self.tableView.insertRow(row_position)
-            for i, column in enumerate(row):
-                self.tableView.setItem(row_position, i, QtWidgets.QTableViewItem(str(column)))
+        print("Внесены изменения в запись в базе")
 
     def closeEvent(self, event):
         print("Уходим, уходим...")
@@ -515,8 +411,6 @@ class MyTableModel(QtCore.QAbstractTableModel):
             self.data_processing(data_list)
         else:
             self.my_list = [["0" for i in range(len(self.header))]]
-        #self.my_list = [(mydata[0], mydata[1], mydata[2], mydata[3], mydata[4], mydata[5], mydata[6], mydata[7], mydata[8],
-        #                 float(mydata[5]) * float(mydata[8])) for mydata in data]
         self.endResetModel()
 
     # Обработка данных полученных с базы:
@@ -528,7 +422,6 @@ class MyTableModel(QtCore.QAbstractTableModel):
         newrow = []
         # Для массива обработанных строк
         newdata = []
-
         # Перебираем строки (str_data_list) и элементы (str_value) в строках
         # count_date, count_volume, count_cost - вычисляются при инициализация модели
         for str_data_list in data_list:
