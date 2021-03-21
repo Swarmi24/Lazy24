@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-import MySQLdb as mysql  # pip install mysqlclient
+import MySQLdb as MySQL  # pip install mysqlclient
 
-import datetime
 
 class work_with_db():
 
@@ -12,7 +11,7 @@ class work_with_db():
         # надо прикрутить трай на случай ошибки подключения
         print("Подключение к базе...")
         try:
-            self.db = mysql.connect(host="127.0.0.1", user="root", passwd="root", db="lazy24", charset="utf8mb4")
+            self.db = MySQL.connect(host="127.0.0.1", user="root", passwd="root", db="lazy24", charset="utf8mb4")
             print("Установлено соединение")
         except Exception:
             print("Ошибка: не удалось подключится к базе")
@@ -39,8 +38,6 @@ class work_with_db():
                 print("Нет подключения к базе, выполняется попытка подключиться...")
                 self.perform_connection()
                 self.load_data(text_query)
-
-                 
 
     def insert_data(self, data):
         with self.db.cursor() as cur:
