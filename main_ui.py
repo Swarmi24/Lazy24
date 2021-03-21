@@ -16,9 +16,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Подключение к базе
         self.db_work_obj.perform_connection()
 
-        # Первоначальная загрузка данных
-        self.db_work_obj.load_data()
-        data = self.db_work_obj.get_select_result()
+
 
         #Названия столбцов (надо унести в базу)
         header = ['№', 'Дата', 'База', '№ АБС', 'Клиент', 'Объем', 'Марка', 'Вид', 'Цена', 'Сумма']
@@ -353,7 +351,13 @@ class MainWindow(QtWidgets.QMainWindow):
         # widget_6 - форма для внесения оплаты
 
         # tableView
-        self.table_model = MyTableModel(self, data, header)
+        # Первоначальная загрузка данных
+        text_query = """select * from shipments"""
+        self.db_work_obj.load_data(text_query)
+        data = self.db_work_obj.get_data()
+        columns_names = self.db_work_obj.get_columns_names()
+
+        self.table_model = MyTableModel(self, data, columns_names, header)
         self.tableView = QtWidgets.QTableView(self.centralwidget)
         self.tableView.setFont(font)
         self.tableView.setGeometry(QtCore.QRect(10, 50, 880, 640))
@@ -371,8 +375,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.widget_4.setVisible(True)
         self.widget_5.setVisible(False)
 
-        self.db_work_obj.load_data()
-        data = self.db_work_obj.get_select_result()
+        text_query = """select * from shipments"""
+        self.db_work_obj.load_data(text_query)
+
+        data = self.db_work_obj.get_data()
         self.table_model.update_data(data)
 
     @pyqtSlot()  # декоратор, в 99% и без него будет работать, но вроде дает оптимизацию
@@ -402,32 +408,23 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @pyqtSlot()  # декоратор, в 99% и без него будет работать, но вроде дает оптимизацию
     def push_button_5_click(self):
-        load_by_data = """select * from shipments WHERE date='{}'""".format(
+        text_query = """select * from shipments WHERE date='{}'""".format(
             self.dateEdit_2.dateTime().toString("yyyy-MM-dd"))
-        self.db_work_obj.load_data_by_data(load_by_data)
-        data = self.db_work_obj.get_select_result()
-        if data:
-            self.table_model.update_data(data)
-        else:
-            data = ("0", "0", "0", "0", "0", "0", "0", "0", "0")
-            self.table_model.update_data(data)
+        self.db_work_obj.load_data(text_query)
+        data = self.db_work_obj.get_data()
+        self.table_model.update_data(data)
 
     @pyqtSlot()  # декоратор, в 99% и без него будет работать, но вроде дает оптимизацию
     def push_button_6_click(self):
         print(self.comboClient_2.currentText())
-        load_by_data = """select * from shipments WHERE client_id='{}'""".format(self.comboClient_2.currentText())
-        print(load_by_data)
-        self.db_work_obj.load_data_by_data(load_by_data)
-        data = self.db_work_obj.get_select_result()
+        text_query = """select * from shipments WHERE client_id='{}'""".format(self.comboClient_2.currentText())
+        self.db_work_obj.load_data(text_query)
+        data = self.db_work_obj.get_data()
         summa = 0.0
         for mydata in data:
             summa = summa + (float(mydata[5]) * float(mydata[8]))
         self.label_9.setText("{} | Долг: {}".format(str(self.comboClient_2.currentText()), str(summa)))
-        if data:
-            self.table_model.update_data(data)
-        else:
-            data = ("0", "0", "0", "0", "0", "0", "0", "0", "0")
-            self.table_model.update_data(data)
+        self.table_model.update_data(data)
 
     @pyqtSlot()
     def button_add_click(self):
@@ -483,11 +480,17 @@ class MyTableModel(QtCore.QAbstractTableModel):
     Инициализируем абстрактную модель(наследование), записываем полученные данные в переменные класса
     MyTableModel'''
 
-    def __init__(self, parent, my_list, header, *args):
+    def __init__(self, parent, data_list, column_list, header, *args):
         QtCore.QAbstractTableModel.__init__(self, parent)
-        my_list_2 = [(mydata[0], mydata[1], mydata[2], mydata[3], mydata[4], mydata[5], mydata[6], mydata[7], mydata[8],
-                    float(mydata[5]) * float(mydata[8])) for mydata in my_list]
-        self.my_list = my_list_2
+        # column_list - названия столбцов в базе
+        # Находим индексы столбцов date, volume и cost - понадобятся в data_processing
+        self.count_date = column_list.index('date')
+        self.count_volume = column_list.index('volume')
+        self.count_cost = column_list.index('cost')
+        
+        # Обработка данных   
+        self.data_processing(data_list)
+        
         self.header = header
 
     def rowCount(self, *args, **kwargs):
@@ -506,8 +509,39 @@ class MyTableModel(QtCore.QAbstractTableModel):
             return self.header[col]
         return None
 
-    def update_data(self, data):
+    def update_data(self, data_list):
         self.beginResetModel()
-        self.my_list = [(mydata[0], mydata[1], mydata[2], mydata[3], mydata[4], mydata[5], mydata[6], mydata[7], mydata[8],
-                         float(mydata[5]) * float(mydata[8])) for mydata in data]
+        if data_list:
+            self.data_processing(data_list)
+        else:
+            self.my_list = [["0" for i in range(len(self.header))]]
+        #self.my_list = [(mydata[0], mydata[1], mydata[2], mydata[3], mydata[4], mydata[5], mydata[6], mydata[7], mydata[8],
+        #                 float(mydata[5]) * float(mydata[8])) for mydata in data]
         self.endResetModel()
+
+    # Обработка данных полученных с базы:
+    # 1 - меняем формат даты с гггг-мм-дд на дд.мм.гггг
+    # 2 - добавляем столбец суммы (стоимость * объем)
+    # Данные с базы приходят в виде кортежа и его нельзя менять, поэтому создается новый массив
+    def data_processing(self, data_list):
+        # Для обработанной строки
+        newrow = []
+        # Для массива обработанных строк
+        newdata = []
+
+        # Перебираем строки (str_data_list) и элементы (str_value) в строках
+        # count_date, count_volume, count_cost - вычисляются при инициализация модели
+        for str_data_list in data_list:
+            for str_value, value in enumerate(str_data_list):
+                if (str_value == self.count_date):
+                    # Изменение формата даты
+                    newrow.append(value.strftime('%d.%m.%Y'))
+                else:
+                    newrow.append(value)
+            # Расчитываем и добавляем сумму
+            newrow.append( float(str_data_list[self.count_volume]) * float(str_data_list[self.count_cost]) )
+            # Добавляем строку в общий массив
+            newdata.append(newrow)
+            # Очищаем массив для строки
+            newrow=[]
+        self.my_list = newdata
