@@ -41,13 +41,33 @@ class work_with_db():
 
     def insert_data(self, data):
         with self.db.cursor() as cur:
-            # Запрос на занесение данных
-            cur.execute(data)
+            try:
+                # Запрос на занесение данных
+                cur.execute(data)
 
-            # Подтверждение
-            self.db.commit()
+                # Подтверждение
+                self.db.commit()
 
-            cur.close()
+                cur.close()
+            except Exception:
+                print("Нет подключения к базе, выполняется попытка подключиться...")
+                self.perform_connection()
+                self.insert_data(data)
+
+    def load_column_data(self, shipments_name):
+        with self.db.cursor() as cur:
+            try:
+                # Получаем названия столбцов таблицы
+                cur.execute = cur.execute("""SHOW COLUMNS FROM {};""".format(shipments_name))
+                columns_names = cur.fetchall()
+                self.columns_names = [item[0] for item in columns_names]
+
+                print("Название колонок загружено")
+                cur.close()
+            except Exception:
+                print("Нет подключения к базе, выполняется попытка подключиться...")
+                self.perform_connection()
+                self.load_column_data(shipments_name)
 
     def get_data(self):
         return self.data

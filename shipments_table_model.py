@@ -11,7 +11,7 @@ class shipments_table_model(QtCore.QAbstractTableModel):
     def __init__(self, parent, data_list, column_list, header, *args):
         QtCore.QAbstractTableModel.__init__(self, parent)
         # column_list - названия столбцов в базе
-        # Находим индексы столбцов date, volume и cost - понадобятся в data_processing
+        # Находим индексы столбцов date, volume, cost и comment - понадобятся в data_processing
         self.count_date = column_list.index('date')
         self.count_volume = column_list.index('volume')
         self.count_cost = column_list.index('cost')
