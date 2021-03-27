@@ -57,17 +57,23 @@ class shipments_table_model(QtCore.QAbstractTableModel):
         newdata = []
         # Перебираем строки (str_data_list) и элементы (str_value) в строках
         # count_date, count_volume, count_cost - вычисляются при инициализация модели
+        # Переделать! Надо разобраться с отображением в таблице и сортировкой по дате
         for str_data_list in data_list:
             for str_value, value in enumerate(str_data_list):
-                if (str_value == self.count_date):
+                if str_value == self.count_date:
                     # Изменение формата даты
                     newrow.append(value.strftime('%d.%m.%Y'))
-                elif str_value == self.count_comm:
-                    # Расчитываем и добавляем сумму
-                    newrow.append(float(str_data_list[self.count_volume]) * float(str_data_list[self.count_cost]))
-                    newrow.append(value)
+                #elif str_value == self.count_volume:
+                #    newrow.append(str(value))
+                #elif str_value == self.count_cost:
+                #    newrow.append(str(value))
+                #elif str_value == self.count_comm:
+                #    newrow.append(str(value))
+                #    # Расчитываем и добавляем сумму
+                #    newrow.append(float(str_data_list[self.count_volume]) * float(str_data_list[self.count_cost]))
+                #    newrow.append(value)
                 else:
-                    newrow.append(value)
+                    newrow.append(str(value))
             # Добавляем строку в общий массив
             newdata.append(newrow)
             # Очищаем массив для строки

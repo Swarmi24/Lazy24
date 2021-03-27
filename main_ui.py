@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import work_with_db
+import workwithdb
 import shipments_table_model
 
 from datetime import datetime
@@ -9,18 +9,15 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QCompleter
 
 
-
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args):
         # Объект для работы с базой
-        self.db_work_obj = work_with_db.work_with_db()
+        self.db_work_obj = workwithdb.WorkWithDb()
 
         # Подключение к базе
         self.db_work_obj.perform_connection()
 
-
-
-        #Названия столбцов (надо унести в базу)
+        # Названия столбцов (надо унести в базу)
         header = ['№', 'Дата', 'База', '№ АБС', 'Клиент', 'Объем', 'Марка', 'Вид', 'Цена', 'Сумма','Примечание']
 
         # Настройки шрифта
@@ -33,10 +30,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("Lazy24 - Работа с базой")
         self.setObjectName("MainWindow")
         self.resize(1200, 700)
-        self.centralwidget = QtWidgets.QWidget()
+        self.central_widget = QtWidgets.QWidget()
 
         # widget - верхняя строка: инфа о клиенте, сумма долга, сумма за день и тп
-        self.widget = QtWidgets.QWidget(self.centralwidget)
+        self.widget = QtWidgets.QWidget(self.central_widget)
         self.widget.setGeometry(QtCore.QRect(10, 10, 880, 30))
         self.widget.setAutoFillBackground(True)
 
@@ -45,7 +42,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.label_9.setFont(font)
 
         # widget_2 - меню в правой части: кнопки просмотр, отгрузка, изменить, оплата и тд
-        self.widget_2 = QtWidgets.QWidget(self.centralwidget)
+        self.widget_2 = QtWidgets.QWidget(self.central_widget)
         self.widget_2.setGeometry(QtCore.QRect(900, 10, 290, 680))
         self.widget_2.setAutoFillBackground(True)
 
@@ -73,7 +70,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pushButton_4.setFont(font)
 
         # widget_3 - форма для внесения отгрузок
-        self.widget_3 = QtWidgets.QWidget(self.centralwidget)
+        self.widget_3 = QtWidgets.QWidget(self.central_widget)
         self.widget_3.setGeometry(QtCore.QRect(900, 170, 291, 500))
         self.widget_3.setVisible(False)
 
@@ -179,8 +176,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.combo_client.setFont(font)
         self.combo_client.setEditable(True)
         # Надо сделать подгрузку с базы
-        list_combo_client = ['', 'Элиста', 'Эверест', 'Ваятель', 'Руслан', 'Дима', 'ЖеняЦ']
-        self.combo_client.addItems(list_combo_client)
+
+        # Получаем из базы имена клиентов и id
+        txt_query_select_client_dict = """SELECT * FROM clients"""
+        self.db_work_obj.load_data(txt_query_select_client_dict)
+        self.clients_dict = dict(self.db_work_obj.get_data())
+        self.clients_dict_inv = {value: key for key, value in self.clients_dict.items()}
+        list_combo_clients = [''] + list(self.clients_dict.values())
+        self.combo_client.addItems(list_combo_clients)
         self.combo_client.completer().setCompletionMode(QCompleter.InlineCompletion)
 
         self.button_add = QtWidgets.QPushButton(self.widget_3)
@@ -199,7 +202,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.button_change.setVisible(False)
 
         # widget_4 - форма для просмотра
-        self.widget_4 = QtWidgets.QWidget(self.centralwidget)
+        self.widget_4 = QtWidgets.QWidget(self.central_widget)
         self.widget_4.setGeometry(QtCore.QRect(900, 170, 291, 500))
         self.widget_4.setVisible(False)
 
@@ -212,7 +215,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.comboClient_2.setGeometry(QtCore.QRect(10, 100, 141, 31))
         self.comboClient_2.setFont(font)
         self.comboClient_2.setEditable(True)
-        self.comboClient_2.addItems(list_combo_client)  # client widget_3
+        self.comboClient_2.addItems(list_combo_clients)  # client widget_3
         self.comboClient_2.completer().setCompletionMode(QCompleter.InlineCompletion)
 
         self.label_10 = QtWidgets.QLabel(self.widget_4)
@@ -242,19 +245,25 @@ class MainWindow(QtWidgets.QMainWindow):
         # Тк формы скорее всего будут всегда одинаковые, кроме кнопки
 
         # widget_5 - форма для внесения оплат
-        self.widget_5 = QtWidgets.QWidget(self.centralwidget)
+        self.widget_5 = QtWidgets.QWidget(self.central_widget)
         self.widget_5.setGeometry(QtCore.QRect(900, 170, 291, 500))
         self.widget_5.setVisible(False)
 
         # tableView
-        # Первоначальная загрузка данных
-        text_query = """select * from shipments"""
-        self.db_work_obj.load_data(text_query)
+        # Получаем из базы все отгрузки
+        txt_query_select_all = """SELECT SH.id_shipment, SH.date, SH.base, SH.abs_num, CL.client_name, SH.volume,
+                        SH.brand, SH.type, SH.cost, SH.cost * SH.volume AS summ, SH.comment
+                        FROM shipments AS SH
+                        JOIN clients AS CL
+                        ON SH.client_id = CL.id_client;"""
+        self.db_work_obj.load_column_data("shipments")
+        self.db_work_obj.load_data(txt_query_select_all)
         data = self.db_work_obj.get_data()
+
         columns_names = self.db_work_obj.get_columns_names()
 
         self.table_model = shipments_table_model.shipments_table_model(self, data, columns_names, header)
-        self.tableView = QtWidgets.QTableView(self.centralwidget)
+        self.tableView = QtWidgets.QTableView(self.central_widget)
         self.tableView.setFont(font)
         self.tableView.setGeometry(QtCore.QRect(10, 50, 880, 640))
         self.proxyModel = QtCore.QSortFilterProxyModel(self)
@@ -263,14 +272,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tableView.resizeColumnsToContents()
         self.tableView.setSortingEnabled(True)
 
-        self.setCentralWidget(self.centralwidget)
+        self.setCentralWidget(self.central_widget)
 
     @pyqtSlot()  # декоратор, в 99% и без него будет работать, но вроде дает оптимизацию
     def push_button_click(self):
         self.widget_3.setVisible(False)
         self.widget_4.setVisible(True)
 
-        text_query = """select * from shipments"""
+        text_query = """SELECT SH.id_shipment, SH.date, SH.base, SH.abs_num, CL.client_name, SH.volume,
+                        SH.brand, SH.type, SH.cost, SH.cost * SH.volume AS summ, SH.comment
+                        FROM shipments AS SH
+                        JOIN clients AS CL
+                        ON SH.client_id = CL.id_client;"""
         self.db_work_obj.load_data(text_query)
 
         data = self.db_work_obj.get_data()
@@ -311,8 +324,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @pyqtSlot()  # декоратор, в 99% и без него будет работать, но вроде дает оптимизацию
     def push_button_5_click(self):
-        text_query = """select * from shipments WHERE date='{}'""".format(
-            self.dateEdit_2.dateTime().toString("yyyy-MM-dd"))
+        text_query = """
+                        SELECT SH.id_shipment, SH.date, SH.base, SH.abs_num, CL.client_name, SH.volume,
+                               SH.brand, SH.type, SH.cost, SH.cost * SH.volume AS summ, SH.comment
+                        FROM shipments AS SH 
+                        JOIN clients AS CL
+                        ON SH.client_id = CL.id_client
+                        WHERE date='{}'
+                     """.format(self.dateEdit_2.dateTime().toString("yyyy-MM-dd"))
         self.db_work_obj.load_data(text_query)
         data = self.db_work_obj.get_data()
         self.table_model.update_data(data)
@@ -320,26 +339,40 @@ class MainWindow(QtWidgets.QMainWindow):
     @pyqtSlot()  # декоратор, в 99% и без него будет работать, но вроде дает оптимизацию
     def push_button_6_click(self):
         print(self.comboClient_2.currentText())
-        text_query = """select * from shipments WHERE client_id='{}'""".format(self.comboClient_2.currentText())
+        text_query = """
+                        SELECT SH.id_shipment, SH.date, SH.base, SH.abs_num, CL.client_name, SH.volume,
+                               SH.brand, SH.type, SH.cost, SH.cost * SH.volume AS summ, SH.comment
+                        FROM shipments AS SH 
+                        JOIN clients AS CL
+                        ON SH.client_id = CL.id_client
+                        WHERE client_id IN (SELECT id_client FROM clients WHERE clients.client_name = '{}')
+                     """.format(self.comboClient_2.currentText())
+
         self.db_work_obj.load_data(text_query)
         data = self.db_work_obj.get_data()
+        # Расчет общей суммы отгрузок по клиенту и вывод на верхний виджет
         summa = 0.0
-        for mydata in data:
-            summa = summa + (float(mydata[5]) * float(mydata[8]))
+        for data_item in data:
+            summa = summa + float(data_item[9])
         self.label_9.setText("{} | Долг: {}".format(str(self.comboClient_2.currentText()), str(summa)))
         self.table_model.update_data(data)
 
     @pyqtSlot()
     def button_add_click(self):
         # Формирование SQL запроса для добавления отгрузки
-        new_add_data = '''
-		INSERT INTO shipments (date, base, abs_num, client_id, volume, brand, type, cost)
-        VALUES ("{}","{}","{}","{}","{}","{}","{}","{}")
-		'''.format(self.dateEdit.dateTime().toString("yyyy-MM-dd"), self.combo_base.currentText(),
-                   self.edit_abs_num.text(),
-                   self.combo_client.currentText(), self.edit_volume.text(), self.combo_type_1.currentText(),
-                   self.combo_type_2.currentText(),
-                   self.edit_cost.text())
+        print(str(self.clients_dict_inv.get(self.combo_client.currentText())))
+        new_add_data = """
+                          INSERT INTO shipments (date, base, abs_num, client_id, volume, brand, type, cost)
+                          VALUES ("{}","{}","{}","{}","{}","{}","{}","{}")
+                       """.format(
+                                 self.dateEdit.dateTime().toString("yyyy-MM-dd"),
+                                 self.combo_base.currentText(),
+                                 self.edit_abs_num.text(),
+                                 str(self.clients_dict_inv.get(self.combo_client.currentText())),
+                                 self.edit_volume.text(),
+                                 self.combo_type_1.currentText(),
+                                 self.combo_type_2.currentText(),
+                                 self.edit_cost.text())
 
         # Исполнение запроса через объект для работы с базой
         self.db_work_obj.insert_data(new_add_data)
@@ -348,15 +381,22 @@ class MainWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def button_change_click(self):
         # Формирование SQL запроса для изменения отгрузки
-        new_change_data = '''
-		UPDATE shipments 
-        SET date = '{}', base = '{}', abs_num = '{}', client_id = '{}', volume = '{}', brand = '{}', type = '{}', cost = '{}'
-        WHERE id_shipment = '{}'
-		'''.format(self.dateEdit.dateTime().toString("yyyy-MM-dd"), self.combo_base.currentText(),
-                   self.edit_abs_num.text(),
-                   self.combo_client.currentText(), self.edit_volume.text(),
-                   self.combo_type_1.currentText(), self.combo_type_2.currentText(),
-                   self.edit_cost.text(), self.id_edit_row)
+        print(str(self.clients_dict.get(self.combo_client.currentText())))
+        new_change_data = """
+                             UPDATE shipments 
+                             SET date = '{}', base = '{}', abs_num = '{}', client_id = '{}', volume = '{}',
+                                        brand = '{}', type = '{}', cost = '{}'
+                             WHERE id_shipment = '{}'
+                          """.format(
+                                   self.dateEdit.dateTime().toString("yyyy-MM-dd"),
+                                   self.combo_base.currentText(),
+                                   self.edit_abs_num.text(),
+                                   str(self.clients_dict_inv.get(self.combo_client.currentText())),
+                                   self.edit_volume.text(),
+                                   self.combo_type_1.currentText(),
+                                   self.combo_type_2.currentText(),
+                                   self.edit_cost.text(),
+                                   self.id_edit_row)
         print(new_change_data)
         # Исполнение запроса через объект для работы с базой     
         self.db_work_obj.insert_data(new_change_data)
