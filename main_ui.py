@@ -66,8 +66,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.pushButton_4 = QtWidgets.QPushButton(self.widget_2)
         self.pushButton_4.setGeometry(QtCore.QRect(150, 60, 131, 41))
+        self.pushButton_4.clicked.connect(self.push_button_4_click)
         self.pushButton_4.setText("Оплата")
         self.pushButton_4.setFont(font)
+
+        self.pushButton_plug_1 = QtWidgets.QPushButton(self.widget_2)
+        self.pushButton_plug_1.setGeometry(QtCore.QRect(10, 110, 131, 41))
+        # self.pushButton_plug_1.clicked.connect(self.)
+        self.pushButton_plug_1.setText("")
+        self.pushButton_plug_1.setFont(font)
+
+        self.pushButton_plug_2 = QtWidgets.QPushButton(self.widget_2)
+        self.pushButton_plug_2.setGeometry(QtCore.QRect(150, 110, 131, 41))
+        # self.pushButton_plug_2.clicked.connect(self.)
+        self.pushButton_plug_2.setText("")
+        self.pushButton_plug_2.setFont(font)
 
         # widget_3 - форма для внесения отгрузок
         self.widget_3 = QtWidgets.QWidget(self.central_widget)
@@ -240,14 +253,67 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pushButton_6.setText("Просмотр")
         self.pushButton_6.clicked.connect(self.push_button_6_click)
 
-        # Убрать виджет 5, при нажатии кнопки изменить - менять описание кнопки добавить и коннект на другой слот делать
-        # При нажатии на кнопку добавить - менять обратно
-        # Тк формы скорее всего будут всегда одинаковые, кроме кнопки
-
         # widget_5 - форма для внесения оплат
         self.widget_5 = QtWidgets.QWidget(self.central_widget)
         self.widget_5.setGeometry(QtCore.QRect(900, 170, 291, 500))
         self.widget_5.setVisible(False)
+
+        self.label_12 = QtWidgets.QLabel(self.widget_5)
+        self.label_12.setGeometry(QtCore.QRect(10, 0, 141, 31))
+        self.label_12.setFont(font)
+        self.label_12.setText("День")
+
+        self.dateEdit_3 = QtWidgets.QDateEdit(self.widget_5)
+        self.dateEdit_3.setGeometry(QtCore.QRect(10, 30, 131, 31))
+        self.dateEdit_3.setFont(font)
+        self.dateEdit_3.setDateTime(datetime.now())
+
+        self.label_13 = QtWidgets.QLabel(self.widget_5)
+        self.label_13.setGeometry(QtCore.QRect(151, 0, 131, 31))
+        self.label_13.setFont(font)
+        self.label_13.setText("Клиент")
+
+        self.comboClient_3 = QtWidgets.QComboBox(self.widget_5)
+        self.comboClient_3.setGeometry(QtCore.QRect(151, 30, 131, 31))
+        self.comboClient_3.setFont(font)
+        self.comboClient_3.setEditable(True)
+        self.comboClient_3.addItems(list_combo_clients)  # client widget_3
+        self.comboClient_3.completer().setCompletionMode(QCompleter.InlineCompletion)
+
+        self.label_14 = QtWidgets.QLabel(self.widget_5)
+        self.label_14.setGeometry(QtCore.QRect(10, 70, 111, 31))
+        self.label_14.setFont(font)
+        self.label_14.setText("Сумма")
+
+        self.edit_pay_summ = QtWidgets.QLineEdit(self.widget_5)
+        self.edit_pay_summ.setGeometry(QtCore.QRect(10, 100, 131, 35))
+        self.edit_pay_summ.setFont(font)
+        # self.edit_pay_summ.setText("Блаблабла")
+
+        self.label_15 = QtWidgets.QLabel(self.widget_5)
+        self.label_15.setGeometry(QtCore.QRect(151, 70, 131, 31))
+        self.label_15.setFont(font)
+        self.label_15.setText("№ Счета/Кому")
+
+        self.edit_bill_num = QtWidgets.QLineEdit(self.widget_5)
+        self.edit_bill_num.setGeometry(QtCore.QRect(151, 100, 131, 35))
+        self.edit_bill_num.setFont(font)
+
+        self.label_16 = QtWidgets.QLabel(self.widget_5)
+        self.label_16.setGeometry(QtCore.QRect(10, 140, 150, 31))
+        self.label_16.setFont(font)
+        self.label_16.setText("Примечание")
+
+        self.edit_comm_2 = QtWidgets.QLineEdit(self.widget_5)
+        self.edit_comm_2.setGeometry(QtCore.QRect(10, 170, 272, 35))
+        self.edit_comm_2.setFont(font)
+        self.edit_comm_2.setText("")
+
+        self.button_add_payment = QtWidgets.QPushButton(self.widget_5)
+        self.button_add_payment.setGeometry(QtCore.QRect(81, 220, 130, 41))
+        self.button_add_payment.clicked.connect(self.button_add_payment_click)
+        self.button_add_payment.setText("Внести")
+        self.button_add_payment.setFont(font)
 
         # tableView
         # Получаем из базы все отгрузки
@@ -278,6 +344,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def push_button_click(self):
         self.widget_3.setVisible(False)
         self.widget_4.setVisible(True)
+        self.widget_5.setVisible(False)
 
         text_query = """SELECT SH.id_shipment, SH.date, SH.base, SH.abs_num, CL.client_name, SH.volume,
                         SH.brand, SH.type, SH.cost, SH.cost * SH.volume AS summ, SH.comment
@@ -293,6 +360,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def push_button_2_click(self):
         self.widget_3.setVisible(True)
         self.widget_4.setVisible(False)
+        self.widget_5.setVisible(False)
 
         self.button_add.setVisible(True)
         self.button_change.setVisible(False)
@@ -303,6 +371,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def push_button_3_click(self):
         self.widget_3.setVisible(True)
         self.widget_4.setVisible(False)
+        self.widget_5.setVisible(False)
 
         self.button_add.setVisible(False)
         self.button_change.setVisible(True)
@@ -321,6 +390,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.combo_type_1.setCurrentText(self.tableView.model().index(my_index.row(), 6).data())
         self.combo_type_2.setCurrentText(self.tableView.model().index(my_index.row(), 7).data())
         self.edit_cost.setText(str(self.tableView.model().index(my_index.row(), 8).data()))
+
+    @pyqtSlot()  # декоратор, в 99% и без него будет работать, но вроде дает оптимизацию
+    def push_button_4_click(self):
+        self.widget_3.setVisible(False)
+        self.widget_4.setVisible(False)
+        self.widget_5.setVisible(True)
 
     @pyqtSlot()  # декоратор, в 99% и без него будет работать, но вроде дает оптимизацию
     def push_button_5_click(self):
@@ -401,6 +476,20 @@ class MainWindow(QtWidgets.QMainWindow):
         # Исполнение запроса через объект для работы с базой     
         self.db_work_obj.insert_data(new_change_data)
         print("Внесены изменения в запись в базе")
+
+    @pyqtSlot()
+    def button_add_payment_click(self):
+        new_add_data_2 = """
+                          INSERT INTO payments (date, client_id, pay_summ, bill_num, comment)
+                          VALUES ("{}","{}","{}","{}","{}")
+                       """.format(
+            self.dateEdit_3.dateTime().toString("yyyy-MM-dd"),
+            str(self.clients_dict_inv.get(self.comboClient_3.currentText())),
+            self.edit_pay_summ.text(),
+            self.edit_bill_num.text(),
+            self.edit_comm_2.text())
+        print(new_add_data_2)
+        self.db_work_obj.insert_data(new_add_data_2)
 
     def closeEvent(self, event):
         print("Уходим, уходим...")
